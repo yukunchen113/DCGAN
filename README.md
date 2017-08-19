@@ -20,9 +20,14 @@ Steps of a GAN:
 	- This will allow the generator to learn features of real images 
 	- I call the loss (from the discriminator) in this process the 'generator loss' as the goal is to change the values of the generator during backpropogation
 
-Goal:
+### Goal:
+Practical Goal:
 - to train the discriminator loss to be the same as the generator loss.
-	- this means that the real and generated images are so similar, that the discriminator doesn't know which is real or fake
+	- this means that the real and generated images are so similar, that the discriminator doesn't know which is real or fake   
+	
+Technical Goal:
+- to let the model learn features and be able to map random noise to a created manifold in the image space which has significant features of one category.
+- the goal is to learn these manifolds
 
 ### Files:
 Files in this repository:
