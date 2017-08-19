@@ -37,6 +37,7 @@ Files in this repository:
 ### Improvements:
 - on MNIST (and a little on cifar), Generator doesn't converge while discriminator converges completely to an accuracy of 99%
 	- can be solved by crippling the discriminator
+	-SOLVED: added noise to outputs of discriminator
 
 ### References:
 @article{DBLP:journals/corr/RadfordMC15,   
