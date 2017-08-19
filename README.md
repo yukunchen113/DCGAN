@@ -15,8 +15,14 @@ Steps of a GAN:
 	- backpropogate through the discriminator only
 	- use 0 as labels for generated images
 	- use 1 as lables for real images
+	- I call the sum of these losses the discriminator loss as the goal is to change the values of the discriminator during backpropogation
 2. Backpropogate through whole discriminator-generator model with 1 as a label
-	- This will allow the generator to learn features of real images
+	- This will allow the generator to learn features of real images 
+	- I call the loss (from the discriminator) in this process the 'generator loss' as the goal is to change the values of the generator during backpropogation
+
+Goal:
+- to train the discriminator loss to be the same as the generator loss.
+	- this means that the real and generated images are so similar, that the discriminator doesn't know which is real or fake
 
 ### Files:
 Files in this repository:
