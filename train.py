@@ -9,11 +9,12 @@ import cPickle as pickle
 from PIL import Image
 import shutil
 import matplotlib.pyplot as plt
-from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("Software/Python/MyCode/DCGAN/Data/",one_hot = True)
 write_frequency = 10
 Sets = ip.Sets
 #Sets = 'MNIST'
+if Sets == 'MNIST':
+	from tensorflow.examples.tutorials.mnist import input_data
+	mnist = input_data.read_data_sets("Software/Python/MyCode/DCGAN/Data/",one_hot = True)
 last_step =100000
 train_dir = '/media/yukun/Barracuda Hard Drive 2TB/Data/DCGAN/'+ Sets +'/ModelCheckpoint'
 main_dir ='/media/yukun/Barracuda Hard Drive 2TB/Data/DCGAN/'+ Sets

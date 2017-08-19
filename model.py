@@ -36,8 +36,17 @@ class dcgan():
 		images = tf.divide(tf.subtract(images, offset_value),normalize_value)
 		self.images = images
 		self.istrain = istrain
-		self.gen_labels = tf.zeros([batch_size],dtype = tf.int64)
-		self.labels = tf.ones([batch_size],dtype = tf.int64)
+
+	def make_label(self, isgenlabels=True):
+		batch_size = self.pm[0]
+		labels = tf.random_normal([batch_size],1,0.17,tf.float32)
+		labels = tf.clip_by_value(labels,0,1)
+		op_labels = tf.subtract(tf.ones([batch_size],tf.float32),labels)
+		labels = tf.reshape(labels, [batch_size,1])
+		op_labels = tf.reshape(op_labels,[batch_size,1])
+		if isgenlabels:
+			return tf.concat([labels,op_labels],1)
+		return tf.concat([op_labels,labels],1)
 
 	def get_sample(self, sample=None):
 		sample_size = self.pm[1]
@@ -126,15 +135,15 @@ class dcgan():
 	def loss(self):
 		self.discriminator(False, reuse = False)
 		logits = self.discriminator_output
-		labels = self.labels
-		loss1 = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels))
+		labels = self.make_label(False)
+		loss1 = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=labels))
 		self.generator(reuse = False)
 		self.discriminator(True)
 		logits = self.discriminator_output
-		labels = self.gen_labels
-		loss2 = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels))
+		labels = self.make_label()
+		loss2 = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=labels))
 		self.dis_loss = loss1+loss2
-		labels = self.labels
+		labels = tf.ones([self.pm[0]],tf.int32)
 		self.gen_loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels))
 		
 	def train(self, global_step):
