@@ -20,6 +20,7 @@ Steps of a GAN:
 	- This will allow the generator to learn features of real images 
 	- I call the loss (from the discriminator) in this process the 'generator loss' as the goal is to change the values of the generator during backpropogation
 
+Model trained on [CIFAR10](https://www.cs.toronto.edu/~kriz/cifar.html), [MNIST](http://yann.lecun.com/exdb/mnist/), and [LSUN](https://github.com/fyu/lsun) bedroom datasets  
 ### Goal:
 Practical Goal:
 - to train the discriminator loss to be the same as the generator loss.
@@ -77,3 +78,14 @@ archivePrefix = "arXiv",
   adsnote = {Provided by the SAO/NASA Astrophysics Data System}   
 }   
 
+CIFAR10: https://www.cs.toronto.edu/~kriz/learning-features-2009-TR.pdf
+
+MNIST: The MNIST database of handwritten digits by Yann Lecun, Corinna Cortes
+
+LSUN:
+@article{yu15lsun,
+    Author = {Yu, Fisher and Zhang, Yinda and Song, Shuran and Seff, Ari and Xiao, Jianxiong},
+    Title = {LSUN: Construction of a Large-scale Image Dataset using Deep Learning with Humans in the Loop},
+    Journal = {arXiv preprint arXiv:1506.03365},
+    Year = {2015}
+}
