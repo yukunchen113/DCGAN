@@ -49,6 +49,7 @@ Files in this repository:
 		- add hidden layer noise to discriminator with dropout
 		- minimize loss difference between discriminator and generator to train generator
 		- reduce number of discriminator layers
+		- reduce width of generator layer
 ### References:
 @article{DBLP:journals/corr/RadfordMC15,   
   author    = {Alec Radford and   
