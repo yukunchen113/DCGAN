@@ -1,11 +1,11 @@
 # DCGAN
-Repository creating [a deep convolutional generative adversarial network](https://arxiv.org/pdf/1511.06434.pdf) Radford et al. in tensorflow
+Repository creating [a deep convolutional generative adversarial network](https://arxiv.org/pdf/1511.06434.pdf) by Radford et al.2015 in tensorflow
 
 ### What does it do?
 DCGANs generate images using CNNs
 
 ### How does it work?
-There are two parts to most [Generative Adversarial Networks](https://arxiv.org/pdf/1406.2661.pdf) Goodfellow et al.
+There are two parts to most [Generative Adversarial Networks](https://arxiv.org/pdf/1406.2661.pdf) by Goodfellow et al. 2014
 - a generator which generates images (using transposed CNN)
 - a discriminator which decides if the images are real or fake (using normal CNN)   
 
