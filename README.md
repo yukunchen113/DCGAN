@@ -40,10 +40,14 @@ Files in this repository:
 	- functions to simplify model.py (these are not in model.py to keep it short)
 - train.py:
 	- trains data while saving sample images on a predefined epoch
-### Improvements:
-- on MNIST (and a little on cifar), Generator doesn't converge while discriminator converges completely to an accuracy of 99%
-	- can be solved by crippling the discriminator
-	-SOLVED: added noise to outputs of discriminator
+	
+### Problems throughout the experiment:
+- Generator doesn't converge while discriminator converges completely to an accuracy of 99%
+	- can be solved by crippling the discriminator, Possible fixes:
+		- adding noise to labels
+		- training generator more often
+		- add hidden layer noise to discriminator with dropout
+		- minimize loss difference between discriminator and generator to train generator
 
 ### References:
 @article{DBLP:journals/corr/RadfordMC15,   
