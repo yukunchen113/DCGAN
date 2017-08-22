@@ -6,7 +6,7 @@ DCGANs generate images using CNNs
 
 ### How does it work?
 There are two parts to most [Generative Adversarial Networks](https://arxiv.org/pdf/1406.2661.pdf) by Goodfellow et al. 2014
-- a generator which generates images (using transposed CNN)
+- a generator which generates images (using transposed CNN, aka deconvolution)
 - a discriminator which decides if the images are real or fake (using normal CNN)   
 
 Steps of a GAN:
@@ -17,10 +17,13 @@ Steps of a GAN:
 	- use 1 as lables for real images
 	- I call the sum of these losses the discriminator loss as the goal is to change the values of the discriminator during backpropogation
 2. Backpropogate through whole discriminator-generator model with 1 as a label
-	- This will allow the generator to learn features of real images 
+	- This will allow the generator to learn the features of real images which the discriminator learned
 	- I call the loss (from the discriminator) in this process the 'generator loss' as the goal is to change the values of the generator during backpropogation
 
 Model trained on [CIFAR10](https://www.cs.toronto.edu/~kriz/cifar.html), [MNIST](http://yann.lecun.com/exdb/mnist/), and [LSUN](https://github.com/fyu/lsun) bedroom datasets  
+
+Discriminator is an [allCNN](https://arxiv.org/pdf/1412.6806.pdf) Tobias et al. 2014 with fully connected layer instead of global average pooling
+
 ### Goal:
 Practical Goal:
 - to train the discriminator loss to be the same as the generator loss.
@@ -44,12 +47,14 @@ Files in this repository:
 ### Problems throughout the experiment:
 - Generator doesn't converge while discriminator converges completely to an accuracy of 99%
 	- can be solved by crippling the discriminator, Possible fixes:
-		- adding noise to labels
+		- adding noise to labels -> this solves problem
 		- training generator more often
 		- add hidden layer noise to discriminator with dropout
 		- minimize loss difference between discriminator and generator to train generator
 		- reduce number of discriminator layers
 		- reduce width of generator layer
+- generator only produces static
+	- solved by replacing global average pooling with fully connected layer on the output from discriminator
 ### References:
 @article{DBLP:journals/corr/RadfordMC15,   
   author    = {Alec Radford and   
@@ -82,6 +87,21 @@ archivePrefix = "arXiv",
    adsurl = {http://adsabs.harvard.edu/abs/2014arXiv1406.2661G},   
   adsnote = {Provided by the SAO/NASA Astrophysics Data System}   
 }   
+
+@article{DBLP:journals/corr/SpringenbergDBR14,
+  author    = {Jost Tobias Springenberg and
+               Alexey Dosovitskiy and
+               Thomas Brox and
+               Martin A. Riedmiller},
+  title     = {Striving for Simplicity: The All Convolutional Net},
+  journal   = {CoRR},
+  volume    = {abs/1412.6806},
+  year      = {2014},
+  url       = {http://arxiv.org/abs/1412.6806},
+  timestamp = {Wed, 07 Jun 2017 14:42:59 +0200},
+  biburl    = {http://dblp.uni-trier.de/rec/bib/journals/corr/SpringenbergDBR14},
+  bibsource = {dblp computer science bibliography, http://dblp.org}
+}
 
 CIFAR10: https://www.cs.toronto.edu/~kriz/learning-features-2009-TR.pdf
 
