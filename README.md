@@ -43,7 +43,7 @@ Files in this repository:
 	- functions to simplify model.py (these are not in model.py to keep it short)
 - train.py:
 	- trains data while saving sample images on a predefined epoch
-	
+- also include generated images during training for MNIST and CIFAR10
 ### Problems throughout the experiment:
 - Generator doesn't converge while discriminator converges completely to an accuracy of 99%
 	- can be solved by crippling the discriminator, Possible fixes:
