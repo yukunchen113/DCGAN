@@ -1,158 +1,129 @@
 import tensorflow as tf 
 import numpy as np 
 import os
-from PIL import Image
-import math
-
 import util as ut
-'''
-params = [#model has to be retrained if any of these are changed
-	batch_size,#size of batch----0
-	sample_size,#size of sample noise-1
-	image_size,#size of the generated image----2
-	n_classes,#number of classes for discriminator, should be 2 ---3
-	n_channels,#number of colour channels----4
-	n_dis_layers#number of layers for the discriminator----5
-	]
-'''
-#default params (for mnist) = [128,100,28,2,1,3]
+import matplotlib.pyplot as plt 
 
 class dcgan():
-	def __init__(self, images, params, istrain=False):
-		'''
-		Args: 
-			images: batch of images, real images, uint8 array of size 
-				[batch_size, height, width, channels]
-			params: list of important values
-			sample: takes in list of size [sample_size], sample noise to generate image from
-			istrain: sets model to training state, type, bool
-		'''
+	def __init__(self, images, params, test_sample=None):
 		self.pm = params
-		batch_size = params[0]
-		#--scaling of images to -1 and 1
 		images = tf.cast(images, tf.float32)
-		offset_value = tf.cast(128, tf.float32)
-		normalize_value = tf.cast(130, tf.float32)
-		images = tf.divide(tf.subtract(images, offset_value),normalize_value)
-		self.images = images
-		self.istrain = istrain
+		images = tf.image.resize_images(images, [self.pm['image_resize'], self.pm['image_resize']])
+		if not self.pm['Sets'] =='MNIST':
+		#	images = images*2-1.0
+		#else:
+			images = images*2.0/255.0-1.0
+		self.real_images = images
+		self.test_sample = ut.make_sample(self.pm['batch_size'],
+			self.pm['sample_size'])
 
-	def make_label(self, isgenlabels=True):
-		batch_size = self.pm[0]
-		labels = tf.random_normal([batch_size],1,0.17,tf.float32)
-		labels = tf.clip_by_value(labels,0,1)
-		op_labels = tf.subtract(tf.ones([batch_size],tf.float32),labels)
-		labels = tf.reshape(labels, [batch_size,1])
-		op_labels = tf.reshape(op_labels,[batch_size,1])
-		if isgenlabels:
-			return tf.concat([labels,op_labels],1)
-		return tf.concat([op_labels,labels],1)
-
-	def get_sample(self, sample=None):
-		sample_size = self.pm[1]
-		if sample is None:
-			sample = tf.truncated_normal([sample_size], stddev=1.0)
-		else: 
-			if not len(sample) == sample_size:
-				print 'sample must be sample size'
-			sample = tf.cast(sample, tf.float32)
-		self.sample = sample
-
-	def generator(self, scope = 'generator',reuse = True,sample = None):
-		'''
-		Generates image, from sample
-		'''
-		with tf.variable_scope(scope,reuse=reuse):
-			batch_size = self.pm[0]
-			image_size = self.pm[2]
-			self.get_sample(sample)
-			i = image_size
-			n_gen_layers = 0
-			while not i%2:
-				n_gen_layers+=1
-				i/=2
-				if n_gen_layers == 5:
-					break
-			start_size = image_size/(2**(n_gen_layers-1))
-			n_channels = self.pm[4]
-			#-reshape sample------------------------
-			if image_size % 2**(n_gen_layers-1):
-				print 'please pick a image_size that is divisible by %d'%(2**(n_gen_layers-1))
-				print image_size
-			out = ut.reshape(
-				self.sample,
-				[batch_size, start_size,start_size,2**(n_gen_layers+5)],
-				'reshape1')
-			out = ut.batch_normalization(out,'batch_normalization1')
-			out = tf.nn.relu(out)
-			#-Conv layers---------------------------
-			new_size = start_size
-			new_depth = out.get_shape()[-1].value
-			for i in range(1,n_gen_layers):
-				new_size *= 2
-				new_depth /= 2
-				activation = tf.nn.relu
-
-				if i == n_gen_layers-1:
-					new_depth = n_channels
-					activation = tf.tanh
-				out = ut.tconv2d(out, [batch_size,new_size,new_size,new_depth],5,2,
+	def generator(self, scope='generator',reuse=True,test_sample=False):
+		with tf.variable_scope(scope, reuse=reuse):
+			# get/calculate parameters-----
+			generator_params = self.pm['gen_params']
+			batch_size =self.pm['batch_size']
+			sample_size =self.pm['sample_size']
+			gen_conv_params = generator_params[1]
+			n_gen_conv_layers = len(gen_conv_params) + 1
+			fm_length = self.pm['image_resize']/2**(n_gen_conv_layers)
+			#get sample-----------
+			test_sample = tf.cast(test_sample,tf.bool)
+			self.sample = tf.cond(test_sample, lambda:self.test_sample, 
+				lambda: ut.make_sample(batch_size,sample_size))
+			#reshape sample-------
+			out = ut.reshape(self.sample,
+				[batch_size,fm_length,fm_length,generator_params[0][-1]],
+				self.pm['sample_size'],'reshape0')
+			#convoutional layers-----
+			for i in range(n_gen_conv_layers - 1):
+				if not fm_length > self.pm['image_resize']:	
+					fm_length*=2
+				current_gen_conv_params = gen_conv_params[i]
+				out = ut.tconv2d(out,
+					[batch_size,fm_length,fm_length,
+					current_gen_conv_params[-1]],
+					current_gen_conv_params[0],
+					current_gen_conv_params[1],
 					'conv2d_transpose%d'%i)
-				if not i == n_gen_layers-1:
-					out = ut.batch_normalization(out, 'batch_normalization%d'%(i+1))
-				out = activation(out)
-			if sample is None:
-				self.generator_output = out
-			else:
-				return out
+				
+				out = ut.batch_normalization(out,'batch_norm%d'%i)
+				out = tf.nn.relu(out)
+			#last convolutional layer (makes the image)----
+			current_gen_conv_params = generator_params[-1]
+			out = ut.tconv2d(out,
+				[batch_size,self.pm['image_resize'],self.pm['image_resize'],
+				self.pm['n_channels']],
+				current_gen_conv_params[0],
+				current_gen_conv_params[1],
+				'final_conv2d_transpose')
+			out = tf.tanh(out)
+			return out
 
-	def discriminator(self, isgen, scope='discriminator',reuse = True):
-		'''
-		gen_im: bool, see if use generator inputs or not
-		'''
-		with tf.variable_scope(scope,reuse=reuse):
-			batch_size = self.pm[0]
-			image_size = self.pm[2]
-			n_dis_layers = self.pm[5]
-			n_classes = self.pm[3]
-			self.isgen = isgen
-			if isgen:
-				images = self.generator_output
-			else:
-				images = self.images
-			#---convolutional Layers-----
-			new_size = image_size
-			for i in range(n_dis_layers-1):
-				out = ut.conv2d(images, image_size*2,3,2,'conv2d%d'%(i+1))
-				out = ut.batch_normalization(out,'batch_normalization%d'%(i+1))
-				out = ut.lrelu(out)
-			#--fully connected layer---
-				#should be changed, there are better methods.
-			out = ut.fully_connected(out,1000,scope = 'fully_connected1')
-			out = ut.fully_connected(out,n_classes,False,'fully_connected2')
-			self.discriminator_output = out
+	def discriminator(self,images,scope='discriminator',reuse=True):
+		with tf.variable_scope(scope, reuse=reuse):
+			#get/calculate parameters:
+			discriminator_params = self.pm['dis_params']
+			n_dis_conv_layers = len(discriminator_params)
+			image_size = self.pm['image_resize']
+			#determine if use generated images------
+			self.images= images
+			out = images
+			#build allcnn with leaky relu-----------
+			for i in range(n_dis_conv_layers):
+				# get individual conv layer parameters-----
+				current_dis_conv_params = discriminator_params[i]
+				if i >= n_dis_conv_layers-1:
+					depth = self.pm['n_classes']
+				else:
+					depth = current_dis_conv_params[2]
+				#make conv layers-----------------------
+				out = ut.conv2d(out, depth, current_dis_conv_params[0],
+					current_dis_conv_params[1],'conv2d%d'%i)
+				if i:
+					out = ut.batch_normalization(out, 'batch_norm%d'%i)
+				out = ut.lrelu(out,self.pm['lrelu_const'])
+				#height, width = out.get_shape().as_list()[1:-1]
+			out = tf.reduce_mean(out, [1,2])
+			#print out.get_shape().as_list()
+			#out = ut.fully_connected(out,self.pm['n_classes'],False)
+			'''
+			out = tf.nn.avg_pool(out,[1,height,width,1],
+				[1,image_size,image_size,1],'SAME')
+			out = tf.squeeze(out,[1,2])
+			'''
+			return out
 
 	def loss(self):
-		self.discriminator(False, reuse = False)
-		logits = self.discriminator_output
-		labels = self.make_label(False)
-		loss1 = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=labels))
-		self.generator(reuse = False)
-		self.discriminator(True)
-		logits = self.discriminator_output
-		labels = self.make_label()
-		loss2 = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=labels))
-		self.dis_loss = loss1+loss2
-		labels = tf.ones([self.pm[0]],tf.int32)
-		self.gen_loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels))
-		
+		#get/calculate parameters:
+		batch_size = self.pm['batch_size']
+		#calculate loss:
+		self.rilogits = self.discriminator(self.real_images, reuse= False)
+		self.gilogits = self.discriminator(self.generator(reuse=False))
+
+		self.rilabels = ut.make_label(batch_size,self.pm['label_stddev'])
+		loss1 = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
+			logits=self.rilogits, labels=self.rilabels))
+		self.gilabels = ut.make_label(batch_size,self.pm['label_stddev'],False)
+		loss2 = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
+			logits=self.gilogits, labels=self.gilabels))
+		self.dis_loss =loss1+loss2
+		self.gilabels2 = ut.make_label(batch_size,self.pm['label_stddev'])
+		self.gen_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
+			logits=self.gilogits, labels=self.gilabels2))
+
+
 	def train(self, global_step):
+		#get/calculate parameters:
+		train_params = self.pm['opt_params']
+		dlr, dbeta1 = train_params[0]
+		glr, gbeta1 = train_params[1]
+		#train model:
 		self.loss()
-		gen_var = [i for i in tf.trainable_variables() if i.name.startswith('g')]
-		dis_var = [i for i in tf.trainable_variables() if i.name.startswith('d')]
-		gen_opt = tf.train.AdamOptimizer(learning_rate = 0.0002,
-			beta1=0.5).minimize(self.gen_loss,var_list=gen_var,global_step=global_step)
-		dis_opt = tf.train.AdamOptimizer(learning_rate = 0.0002,
-			beta1=0.5).minimize(self.dis_loss,var_list=dis_var,global_step=global_step)
+		gen_var = [var for var in tf.trainable_variables() if var.name.startswith('g')]
+		dis_var = [var for var in tf.trainable_variables() if var.name.startswith('d')]
+		gen_opt = tf.train.AdamOptimizer(learning_rate = glr,
+			 beta1=gbeta1).minimize(self.gen_loss,var_list=gen_var,global_step=global_step)
+		dis_opt = tf.train.AdamOptimizer(learning_rate = dlr,
+			 beta1=dbeta1).minimize(self.dis_loss,var_list=dis_var,global_step=global_step)
 		with tf.control_dependencies([gen_opt,dis_opt]):
 			self.train_opt = tf.no_op(name='train')

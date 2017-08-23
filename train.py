@@ -2,113 +2,139 @@ import tensorflow as tf
 import numpy as np 
 import os
 import math
+import util as ut
 import model as mp
-import cifar10_input as ip 
 import time
 import cPickle as pickle
 from PIL import Image
 import shutil
 import matplotlib.pyplot as plt
-write_frequency = 10
-Sets = ip.Sets
-#Sets = 'MNIST'
-if Sets == 'MNIST':
-	from tensorflow.examples.tutorials.mnist import input_data
-	mnist = input_data.read_data_sets("Software/Python/MyCode/DCGAN/Data/",one_hot = True)
-last_step =100000
-train_dir = '/media/yukun/Barracuda Hard Drive 2TB/Data/DCGAN/'+ Sets +'/ModelCheckpoint'
-main_dir ='/media/yukun/Barracuda Hard Drive 2TB/Data/DCGAN/'+ Sets
-'''
-params = [#model has to be retrained if any of these are changed
-	batch_size,#size of batch----0
-	sample_size,#size of sample noise-1
-	image_size,#size of the generated image----2
-	n_classes,#number of classes for discriminator, should be 2 ---3
-	n_channels,#number of colour channels----4
-	n_dis_layers#number of layers for the discriminator----5
-	]
-'''
-def timer(total_seconds):
-	ts = total_seconds%60
-	tm = (total_seconds/60)%60
-	th = (total_seconds/3600)%24
-	td = (total_seconds/864000)%7
-	tw = total_seconds/604800
-	time_list = [tw,td,th,tm,ts]
-	unit_list = ['w','d','h','m','s']
-	string = ''
-	for i in range(len(time_list)):
-		if int(time_list[i]):
-			string += '%d'%time_list[i] + unit_list[i] +' '
-	return string
-def print_string(i,gl,dl,spb,td):
-	string = 'step:%d, generator loss:%.3f, discriminator loss:%.3f, seconds per batch:%f, '
-	print string%(i,gl,dl,spb) + 'total run time: ' + td
-
-def train_data(params = [128,50,32,2,3,3]):
+def train_data(params,filewriter):
+	#--------set important variables
 	global_step = tf.contrib.framework.get_or_create_global_step()
-	batch_size = params[0]
-	if not Sets == 'MNIST':
-		images = ip.input(batch_size) 
-	else:
-	#----for mnist
-		with tf.variable_scope('input'):
-			x = tf.placeholder(tf.float32, [batch_size, params[2]*params[2]])
-			images = tf.reshape(x, [-1,params[2],params[2],1])
-	#--------
-	model = mp.dcgan(images, params, istrain = True)
+	if params['Sets'] == 'MNIST':
+		from tensorflow.examples.tutorials.mnist import input_data
+		mnist = input_data.read_data_sets("Software/Python/MyCode/DCGAN/Data/",one_hot = True)
+		params['n_channels'] = 1
+	batch_size = params['batch_size']
+	Sets = params['Sets']
+	if Sets == 'CIFAR10':
+		import cifar10_input as ip 
+		images = ip.input(batch_size)
+	if Sets == 'MNIST':
+		x = tf.placeholder(tf.float32, [batch_size, 28*28])
+		images = tf.reshape(x, [-1,28,28,1])
+	if Sets == 'LSUN':
+		import LSUN_input as ip
+		images = ip.input(batch_size)
+	#---------model__________________
+	model = mp.dcgan(images,params)
 	model.train(global_step)
+	test_images = model.generator(test_sample=True)
 	class log_hook(tf.train.SessionRunHook):
 		def begin(self):
-			self.time = time.time()
-			self.total_time = time.time()
 			self.step = -1
+			self.previous_time = time.time()
+			self.start_time = time.time()
 			self.step_points = 1
-			self.sample_images = []
 		def before_run(self, run_context):
 			self.step += 1
-			mnist_batch,_ = mnist.train.next_batch(params[0])
+			feed_dict = None
 			if Sets == 'MNIST':
-				return tf.train.SessionRunArgs([model.gen_loss,model.dis_loss,
-					 model.generator_output],feed_dict = {x:mnist_batch})
-			else: 
-				return tf.train.SessionRunArgs([model.gen_loss,model.dis_loss,
-					 model.generator_output])
+				mnist_batch,_ = mnist.train.next_batch(batch_size)
+				feed_dict={x:mnist_batch}
+			return tf.train.SessionRunArgs([model.dis_loss,model.gen_loss,test_images],
+				feed_dict=feed_dict)
 		def after_run(self, run_context, run_values):
-			if not self.step%write_frequency:
+
+			if not self.step%params['print_frequency']:
 				curtime = time.time()
-				duration = curtime - self.time
-				total_dur = curtime - self.total_time
-				total_dur = timer(total_dur)
-				self.time = curtime
-				gen_loss, dis_loss, _ = run_values.results
-				sec_per_batch = float(duration)/write_frequency
-				print_string(self.step,gen_loss,dis_loss,sec_per_batch,total_dur)
-			if (not self.step% self.step_points) or (self.step == last_step) or (not self.step%5000):
+				duration = curtime - self.previous_time
+				total_dur = curtime - self.start_time
+				total_dur = ut.timer(total_dur)
+				self.previous_time = curtime
+				dis_loss, gen_loss, _ = run_values.results
+				sec_per_batch = float(duration)/params['print_frequency']
+				string = ut.make_info(self.step,gen_loss,dis_loss,sec_per_batch,total_dur)
+				print string
+				if not self.step%params['write_frequency']:
+					filewriter.write(string+'\n')
+			if (not self.step% self.step_points) or (self.step == params['last_step']) or (not self.step%100):
 				self.step_points *= 2
 				test = run_values.results[-1]
-				test = test[0]*130+128
+				if params['Sets'] == 'MNIST':
+					test = (1-test)*255
+				else:
+					test = ((test+1)*255)/2
 				test = np.clip(test, 0,255)
 				test = np.asarray(test,np.uint8)
-				if params[4] ==1:
-					test = np.squeeze(test, axis = 2)
-				img = Image.fromarray(test)
-				img = img.resize((150,150))
-				img.save('/media/yukun/Barracuda Hard Drive 2TB/Data/DCGAN/'+ Sets +'/trainGen/step%d.jpg'%self.step)
-	hooks = [
-		tf.train.StopAtStepHook(last_step = (last_step*2)),
-		tf.train.NanTensorHook(model.dis_loss),
-		log_hook()]
-	with tf.train.MonitoredTrainingSession(checkpoint_dir= train_dir,hooks = hooks) as sess:
+				combined_img = Image.new('RGB', (150*params['n_saved_samples'],
+					150))
+				for i in range(params['n_saved_samples']):
+					ind_test = test[i,:,:,:]
+					if params['n_channels'] == 1:
+						ind_test = np.squeeze(ind_test, axis = 2)
+					img = Image.fromarray(ind_test)
+					img = img.resize((150,150))
+					combined_img.paste(img,(i*150,0))
+				combined_img.save(params['info_dir']+'/step%d.jpg'%(self.step))
+
+	hooks = [tf.train.NanTensorHook(model.dis_loss),
+	tf.train.StopAtStepHook(last_step=params['last_step']*2),
+	log_hook()]
+	with tf.train.MonitoredTrainingSession(checkpoint_dir = params['train_dir'],
+		hooks = hooks) as sess:
 		while not sess.should_stop():
 			sess.run(model.train_opt)
 
 def main(argv=None):
-	train_data()
+	#set/create parameters----------------------------------------------------
+	params = {
+		'batch_size':128,#batch size, int
+		'sample_size':100,#sample size, int
+		'image_resize':32,#has to be at least divisible by the  2^(len(gen_params[1])+1)
+		'n_saved_samples':8,#: Number of samples that are saved per batch (on prespecified step)
+		'label_stddev':0.0,#: tinstance noise standard deviation (for labels)
+		'gen_params':[[1024],[[5,2,512],[5,2,256],[5,2,128]],[5,2]],#: generator layer info [[reshape depth],[[conv1 kernel, conv1 stride, conv1 depth]...],[last conv kernel, last conv stride]] (last conv depth will be n_channels)
+		'dis_params':[[3,1,96],[3,1,96],[3,2,96],[3,1,192],[3,1,192],[3,2,192],[3,1,192],[1,1,192],[1,1]],#: discrimonator layer depths [[conv1 kernel, conv1 stride, conv1 depth]...[last conv kernel, last conv stride]] (last conv depth will be n_classes)]
+		'n_channels':3,#: number of colour channels
+		'n_classes':2,#: number of classes for discriminator
+		'print_frequency':10,#: print frequency to console
+		'write_frequency':100,#: write frequency to info file
+		'Sets':'CIFAR10',#ip.Sets #: Dataset
+		'last_step':100000,#total number of iterations
+		'opt_params':[[0.0002,0.5],[0.0002,0.5]],#: optimizer hyperparameters, [[dicriminator lr, discriminator beta], [generator lr, generator beta]]
+		'lrelu_const':0.2,#: leaky rely constant
+		'main_dir':'/media/yukun/Barracuda Hard Drive 2TB/Data/DCGAN/'#: directory of where you want to generate images and log to
+		}
+	#should only change directory above--------------------------------------
+	params['main_dir'] = os.path.join(params['main_dir'], params['Sets'])
+	params['train_dir'] = os.path.join(params['main_dir'], 'ModelCheckpoint')
+	i = 1
+	while tf.gfile.Exists(params['main_dir'] + '/'+params['Sets']+'trainGen%d'%i):
+		i+=1
+		time.sleep(0.100)
+	params['info_dir'] = os.path.join(params['main_dir'],params['Sets']+'trainGen%d'%i)
+	time.sleep(0.100)
+	if params['image_resize']%(2**(len(params['gen_params'][1])+1)):
+		print 'image resize should be divisible by 2^(len(gen_params[1])+1)'
+		quit()
+	#---running the training
+	train_dir = params['train_dir']
+	if tf.gfile.Exists(train_dir):
+		time.sleep(0.100)
+		tf.gfile.DeleteRecursively(train_dir)
+		time.sleep(0.100)	
+	os.mkdir(train_dir)
+	time.sleep(0.100)
+	os.mkdir(params['info_dir'])
+	with open(os.path.join(params['info_dir'], 'info.txt'),'w') as f:
+		string = ''
+		for i in params:
+			string += i+':'+str(params[i]) +'\n'
+		string +='\n\n\nRun Info: \n'
+		f.write(string)
+		train_data(params,f)
 
 if __name__ == '__main__':
-	if tf.gfile.Exists(main_dir):
-		tf.gfile.DeleteRecursively(main_dir)	
-	os.makedirs(train_dir)
-	os.makedirs(main_dir + '/trainGen')
 	tf.app.run()
