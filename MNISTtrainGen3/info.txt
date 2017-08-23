@@ -1,0 +1,146 @@
+info_dir:/media/yukun/Barracuda Hard Drive 2TB/Data/DCGAN/MNIST/MNISTtrainGen3
+main_dir:/media/yukun/Barracuda Hard Drive 2TB/Data/DCGAN/MNIST
+last_step:100000
+gen_params:[[1024], [[5, 2, 512], [5, 2, 256], [5, 2, 128]], [5, 2]]
+n_saved_samples:8
+label_stddev:0.1
+Sets:MNIST
+dis_params:[[3, 1, 96], [3, 1, 96], [3, 2, 96], [3, 1, 192], [3, 1, 192], [3, 2, 192], [3, 1, 192], [1, 1, 192], [1, 1]]
+batch_size:128
+sample_size:100
+image_resize:32
+train_dir:/media/yukun/Barracuda Hard Drive 2TB/Data/DCGAN/MNIST/ModelCheckpoint
+write_frequency:100
+n_classes:2
+n_channels:3
+opt_params:[[0.0002, 0.5], [0.0002, 0.5]]
+print_frequency:10
+lrelu_const:0.2
+
+
+
+Run Info: 
+step:0, generator loss:0.730, discriminator loss:1.376, seconds per batch:0.930504, total run time: 9s 
+step:100, generator loss:2.777, discriminator loss:0.334, seconds per batch:0.458241, total run time: 55s 
+step:200, generator loss:2.879, discriminator loss:0.335, seconds per batch:0.481934, total run time: 1m 42s 
+step:300, generator loss:3.010, discriminator loss:0.389, seconds per batch:0.479876, total run time: 2m 31s 
+step:400, generator loss:3.070, discriminator loss:0.344, seconds per batch:0.481224, total run time: 3m 19s 
+step:500, generator loss:2.977, discriminator loss:0.294, seconds per batch:0.483168, total run time: 4m 7s 
+step:600, generator loss:3.012, discriminator loss:0.325, seconds per batch:0.487967, total run time: 4m 56s 
+step:700, generator loss:3.047, discriminator loss:0.321, seconds per batch:0.482094, total run time: 5m 44s 
+step:800, generator loss:3.165, discriminator loss:0.350, seconds per batch:0.480446, total run time: 6m 33s 
+step:900, generator loss:3.123, discriminator loss:0.350, seconds per batch:0.484467, total run time: 7m 21s 
+step:1000, generator loss:3.039, discriminator loss:0.325, seconds per batch:0.481594, total run time: 8m 9s 
+step:1100, generator loss:2.991, discriminator loss:0.329, seconds per batch:0.484101, total run time: 8m 58s 
+step:1200, generator loss:3.051, discriminator loss:0.349, seconds per batch:0.483699, total run time: 9m 46s 
+step:1300, generator loss:3.130, discriminator loss:0.362, seconds per batch:0.483062, total run time: 10m 36s 
+step:1400, generator loss:3.136, discriminator loss:0.297, seconds per batch:0.480697, total run time: 11m 25s 
+step:1500, generator loss:2.862, discriminator loss:0.375, seconds per batch:0.483556, total run time: 12m 13s 
+step:1600, generator loss:2.975, discriminator loss:0.389, seconds per batch:0.483571, total run time: 13m 1s 
+step:1700, generator loss:0.258, discriminator loss:1.896, seconds per batch:0.480896, total run time: 13m 50s 
+step:1800, generator loss:3.158, discriminator loss:0.355, seconds per batch:0.482470, total run time: 14m 38s 
+step:1900, generator loss:3.122, discriminator loss:0.319, seconds per batch:0.483769, total run time: 15m 26s 
+step:2000, generator loss:3.109, discriminator loss:0.334, seconds per batch:0.482415, total run time: 16m 15s 
+step:2100, generator loss:3.303, discriminator loss:0.323, seconds per batch:0.482599, total run time: 17m 3s 
+step:2200, generator loss:3.032, discriminator loss:0.394, seconds per batch:0.482540, total run time: 17m 51s 
+step:2300, generator loss:3.296, discriminator loss:0.352, seconds per batch:0.482887, total run time: 18m 39s 
+step:2400, generator loss:2.288, discriminator loss:0.351, seconds per batch:0.482065, total run time: 19m 28s 
+step:2500, generator loss:1.573, discriminator loss:0.549, seconds per batch:0.484766, total run time: 20m 19s 
+step:2600, generator loss:1.171, discriminator loss:0.863, seconds per batch:0.482578, total run time: 21m 7s 
+step:2700, generator loss:2.069, discriminator loss:0.411, seconds per batch:0.484518, total run time: 21m 56s 
+step:2800, generator loss:3.311, discriminator loss:0.370, seconds per batch:0.481809, total run time: 22m 44s 
+step:2900, generator loss:2.238, discriminator loss:0.429, seconds per batch:0.484854, total run time: 23m 32s 
+step:3000, generator loss:1.634, discriminator loss:0.584, seconds per batch:0.484258, total run time: 24m 21s 
+step:3100, generator loss:0.418, discriminator loss:1.411, seconds per batch:0.485695, total run time: 25m 9s 
+step:3200, generator loss:2.816, discriminator loss:0.392, seconds per batch:0.488077, total run time: 25m 58s 
+step:3300, generator loss:2.159, discriminator loss:0.561, seconds per batch:0.482852, total run time: 26m 46s 
+step:3400, generator loss:1.516, discriminator loss:0.524, seconds per batch:0.483105, total run time: 27m 34s 
+step:3500, generator loss:1.927, discriminator loss:0.744, seconds per batch:0.481460, total run time: 28m 23s 
+step:3600, generator loss:2.727, discriminator loss:0.399, seconds per batch:0.479093, total run time: 29m 11s 
+step:3700, generator loss:1.825, discriminator loss:0.787, seconds per batch:0.480980, total run time: 30m 
+step:3800, generator loss:1.458, discriminator loss:0.531, seconds per batch:0.483753, total run time: 30m 50s 
+step:3900, generator loss:3.215, discriminator loss:0.351, seconds per batch:0.482139, total run time: 31m 39s 
+step:4000, generator loss:5.419, discriminator loss:1.819, seconds per batch:0.483373, total run time: 32m 27s 
+step:4100, generator loss:2.880, discriminator loss:0.402, seconds per batch:0.484315, total run time: 33m 16s 
+step:4200, generator loss:0.363, discriminator loss:1.636, seconds per batch:0.482521, total run time: 34m 4s 
+step:4300, generator loss:2.976, discriminator loss:0.386, seconds per batch:0.494807, total run time: 34m 52s 
+step:4400, generator loss:3.003, discriminator loss:0.307, seconds per batch:0.484546, total run time: 35m 40s 
+step:4500, generator loss:2.261, discriminator loss:0.397, seconds per batch:0.481854, total run time: 36m 29s 
+step:4600, generator loss:2.221, discriminator loss:0.424, seconds per batch:0.482778, total run time: 37m 17s 
+step:4700, generator loss:2.309, discriminator loss:0.388, seconds per batch:0.481685, total run time: 38m 5s 
+step:4800, generator loss:3.428, discriminator loss:0.618, seconds per batch:0.483814, total run time: 38m 54s 
+step:4900, generator loss:2.622, discriminator loss:0.374, seconds per batch:0.481606, total run time: 39m 42s 
+step:5000, generator loss:2.813, discriminator loss:0.346, seconds per batch:0.481434, total run time: 40m 33s 
+step:5100, generator loss:3.137, discriminator loss:0.319, seconds per batch:0.482995, total run time: 41m 21s 
+step:5200, generator loss:2.986, discriminator loss:0.335, seconds per batch:0.482637, total run time: 42m 9s 
+step:5300, generator loss:3.293, discriminator loss:0.335, seconds per batch:0.490215, total run time: 42m 58s 
+step:5400, generator loss:2.979, discriminator loss:0.344, seconds per batch:0.464720, total run time: 43m 44s 
+step:5500, generator loss:3.038, discriminator loss:0.321, seconds per batch:0.465816, total run time: 44m 31s 
+step:5600, generator loss:2.871, discriminator loss:0.352, seconds per batch:0.465037, total run time: 45m 17s 
+step:5700, generator loss:3.028, discriminator loss:0.331, seconds per batch:0.464974, total run time: 46m 4s 
+step:5800, generator loss:3.057, discriminator loss:0.347, seconds per batch:0.464873, total run time: 46m 51s 
+step:5900, generator loss:3.201, discriminator loss:0.309, seconds per batch:0.464173, total run time: 47m 37s 
+step:6000, generator loss:2.978, discriminator loss:0.322, seconds per batch:0.465254, total run time: 48m 24s 
+step:6100, generator loss:3.181, discriminator loss:0.353, seconds per batch:0.464463, total run time: 49m 10s 
+step:6200, generator loss:4.876, discriminator loss:1.084, seconds per batch:0.465911, total run time: 49m 57s 
+step:6300, generator loss:2.050, discriminator loss:0.423, seconds per batch:0.465187, total run time: 50m 46s 
+step:6400, generator loss:1.368, discriminator loss:0.688, seconds per batch:0.464590, total run time: 51m 32s 
+step:6500, generator loss:2.158, discriminator loss:0.425, seconds per batch:0.465208, total run time: 52m 19s 
+step:6600, generator loss:3.760, discriminator loss:0.381, seconds per batch:0.464445, total run time: 53m 5s 
+step:6700, generator loss:2.445, discriminator loss:0.405, seconds per batch:0.465757, total run time: 53m 52s 
+step:6800, generator loss:2.411, discriminator loss:0.437, seconds per batch:0.465518, total run time: 54m 38s 
+step:6900, generator loss:3.910, discriminator loss:0.496, seconds per batch:0.465191, total run time: 55m 25s 
+step:7000, generator loss:2.932, discriminator loss:0.365, seconds per batch:0.465068, total run time: 56m 11s 
+step:7100, generator loss:3.880, discriminator loss:0.419, seconds per batch:0.464362, total run time: 56m 58s 
+step:7200, generator loss:2.967, discriminator loss:0.382, seconds per batch:0.465274, total run time: 57m 44s 
+step:7300, generator loss:4.032, discriminator loss:0.486, seconds per batch:0.465482, total run time: 58m 31s 
+step:7400, generator loss:2.593, discriminator loss:0.365, seconds per batch:0.465614, total run time: 59m 17s 
+step:7500, generator loss:2.344, discriminator loss:0.345, seconds per batch:0.465446, total run time: 1h 4s 
+step:7600, generator loss:3.032, discriminator loss:0.363, seconds per batch:0.466027, total run time: 1h 53s 
+step:7700, generator loss:4.321, discriminator loss:0.308, seconds per batch:0.485139, total run time: 1h 1m 41s 
+step:7800, generator loss:2.927, discriminator loss:0.355, seconds per batch:0.482480, total run time: 1h 2m 30s 
+step:7900, generator loss:3.030, discriminator loss:0.340, seconds per batch:0.487937, total run time: 1h 3m 18s 
+step:8000, generator loss:3.103, discriminator loss:0.309, seconds per batch:0.480045, total run time: 1h 4m 6s 
+step:8100, generator loss:3.110, discriminator loss:0.333, seconds per batch:0.480839, total run time: 1h 4m 54s 
+step:8200, generator loss:3.052, discriminator loss:0.326, seconds per batch:0.480691, total run time: 1h 5m 43s 
+step:8300, generator loss:3.036, discriminator loss:0.325, seconds per batch:0.482158, total run time: 1h 6m 31s 
+step:8400, generator loss:3.124, discriminator loss:0.341, seconds per batch:0.478916, total run time: 1h 7m 19s 
+step:8500, generator loss:3.159, discriminator loss:0.333, seconds per batch:0.480833, total run time: 1h 8m 7s 
+step:8600, generator loss:3.053, discriminator loss:0.331, seconds per batch:0.491671, total run time: 1h 8m 55s 
+step:8700, generator loss:2.931, discriminator loss:0.364, seconds per batch:0.482573, total run time: 1h 9m 44s 
+step:8800, generator loss:2.879, discriminator loss:0.328, seconds per batch:0.480940, total run time: 1h 10m 34s 
+step:8900, generator loss:2.978, discriminator loss:0.321, seconds per batch:0.484319, total run time: 1h 11m 23s 
+step:9000, generator loss:3.178, discriminator loss:0.341, seconds per batch:0.482681, total run time: 1h 12m 11s 
+step:9100, generator loss:2.960, discriminator loss:0.344, seconds per batch:0.485715, total run time: 1h 13m 
+step:9200, generator loss:3.002, discriminator loss:0.311, seconds per batch:0.479071, total run time: 1h 13m 48s 
+step:9300, generator loss:3.064, discriminator loss:0.348, seconds per batch:0.482984, total run time: 1h 14m 36s 
+step:9400, generator loss:3.169, discriminator loss:0.318, seconds per batch:0.480952, total run time: 1h 15m 24s 
+step:9500, generator loss:3.106, discriminator loss:0.337, seconds per batch:0.484621, total run time: 1h 16m 12s 
+step:9600, generator loss:3.035, discriminator loss:0.329, seconds per batch:0.487335, total run time: 1h 17m 1s 
+step:9700, generator loss:3.080, discriminator loss:0.332, seconds per batch:0.481635, total run time: 1h 17m 49s 
+step:9800, generator loss:3.082, discriminator loss:0.312, seconds per batch:0.481706, total run time: 1h 18m 37s 
+step:9900, generator loss:3.222, discriminator loss:0.317, seconds per batch:0.480655, total run time: 1h 19m 25s 
+step:10000, generator loss:3.150, discriminator loss:0.335, seconds per batch:0.481458, total run time: 1h 20m 16s 
+step:10100, generator loss:3.078, discriminator loss:0.351, seconds per batch:0.481287, total run time: 1h 21m 4s 
+step:10200, generator loss:3.143, discriminator loss:0.318, seconds per batch:0.481411, total run time: 1h 21m 52s 
+step:10300, generator loss:3.187, discriminator loss:0.308, seconds per batch:0.481954, total run time: 1h 22m 41s 
+step:10400, generator loss:2.977, discriminator loss:0.353, seconds per batch:0.479839, total run time: 1h 23m 29s 
+step:10500, generator loss:3.090, discriminator loss:0.331, seconds per batch:0.478881, total run time: 1h 24m 17s 
+step:10600, generator loss:3.107, discriminator loss:0.343, seconds per batch:0.481201, total run time: 1h 25m 5s 
+step:10700, generator loss:3.117, discriminator loss:0.355, seconds per batch:0.481133, total run time: 1h 25m 53s 
+step:10800, generator loss:3.111, discriminator loss:0.315, seconds per batch:0.481666, total run time: 1h 26m 42s 
+step:10900, generator loss:3.127, discriminator loss:0.350, seconds per batch:0.484340, total run time: 1h 27m 30s 
+step:11000, generator loss:3.199, discriminator loss:0.366, seconds per batch:0.481287, total run time: 1h 28m 19s 
+step:11100, generator loss:3.093, discriminator loss:0.331, seconds per batch:0.480125, total run time: 1h 29m 7s 
+step:11200, generator loss:2.808, discriminator loss:0.347, seconds per batch:0.481997, total run time: 1h 29m 56s 
+step:11300, generator loss:3.232, discriminator loss:0.326, seconds per batch:0.492502, total run time: 1h 30m 46s 
+step:11400, generator loss:3.147, discriminator loss:0.344, seconds per batch:0.484195, total run time: 1h 31m 35s 
+step:11500, generator loss:3.150, discriminator loss:0.345, seconds per batch:0.482764, total run time: 1h 32m 23s 
+step:11600, generator loss:3.043, discriminator loss:0.339, seconds per batch:0.487806, total run time: 1h 33m 12s 
+step:11700, generator loss:3.062, discriminator loss:0.331, seconds per batch:0.483660, total run time: 1h 34m 
+step:11800, generator loss:3.052, discriminator loss:0.350, seconds per batch:0.491478, total run time: 1h 34m 49s 
+step:11900, generator loss:3.069, discriminator loss:0.382, seconds per batch:0.483657, total run time: 1h 35m 38s 
+step:12000, generator loss:2.864, discriminator loss:0.336, seconds per batch:0.486940, total run time: 1h 36m 26s 
+step:12100, generator loss:3.067, discriminator loss:0.355, seconds per batch:0.485239, total run time: 1h 37m 15s 
+step:12200, generator loss:5.001, discriminator loss:4.593, seconds per batch:0.484294, total run time: 1h 38m 3s 
+step:12300, generator loss:1.597, discriminator loss:0.571, seconds per batch:0.483004, total run time: 1h 38m 52s 
